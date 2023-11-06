@@ -1,0 +1,107 @@
+{ "psychologist" : [
+    {
+        "psychologist_id": 1,
+        "name": "Dr. John Smith",
+        "qualifications": "Ph.D. in Clinical Psychology, Licensed Therapist",
+        "specialty": "Depression and Anxiety",
+        "availability": [1,3]
+    },
+    {
+        "psychologist_id": 2,
+        "name": "Dr. Sarah Johnson",
+        "qualifications": "M.A. in Counseling, Licensed Counselor",
+        "specialty": "Family Conflict Resolution",
+        "availability": [2,4]
+    },
+    {
+        "psychologist_id": 3,
+        "name": "Dr. Emily Brown",
+        "qualifications": "Ph.D. in Child Psychology, Certified Play Therapist",
+        "specialty": "Child and Adolescent Counseling",
+        "availability": [3,5]
+    },
+    {
+        "psychologist_id": 4,
+        "name": "Dr. Michael Davis",
+        "qualifications": "M.S. in Clinical Psychology, Licensed Therapist",
+        "specialty": "Substance Abuse and Addiction",
+        "availability": [1,4]
+    },
+    {
+        "psychologist_id": 5,
+        "name": "Dr. Laura Wilson",
+        "qualifications": "Ph.D. in Counseling Psychology, Certified Marriage Therapist",
+        "specialty": "Marriage and Couples Counseling",
+        "availability": [2,5]
+    },
+    {
+        "psychologist_id": 6,
+        "name": "Dr. Robert Lee",
+        "qualifications": "M.A. in Clinical Psychology, Licensed Counselor",
+        "specialty": "Stress Management",
+        "availability": [1,3]
+    },
+    {
+        "psychologist_id": 7,
+        "name": "Dr. Olivia Martin",
+        "qualifications": "Ph.D. in Clinical Psychology, Certified Family Therapist",
+        "specialty": "Family Conflict Resolution",
+        "availability": [4,5]
+    },
+    {
+        "psychologist_id": 8,
+        "name": "Dr. James Wilson",
+        "qualifications": "M.S. in Counseling Psychology, Licensed Therapist",
+        "specialty": "Anxiety Disorders",
+        "availability": [3,6]
+    },
+    {
+        "psychologist_id": 9,
+        "name": "Dr. Jessica Smith",
+        "qualifications": "Ph.D. in Clinical Psychology, Certified Play Therapist",
+        "specialty": "Child and Adolescent Counseling",
+        "availability": [1,5]
+    },
+    {
+        "psychologist_id": 10,
+        "name": "Dr. Daniel Johnson",
+        "qualifications": "M.A. in Counseling, Certified Addiction Counselor",
+        "specialty": "Substance Abuse and Addiction",
+        "availability": [2,4]
+    },
+    {
+        "psychologist_id": 11,
+        "name": "Dr. Emily Miller",
+        "qualifications": "Ph.D. in Clinical Psychology, Certified Marriage Therapist",
+        "specialty": "Marriage and Couples Counseling",
+        "availability": [1,3]
+    },
+    {
+        "psychologist_id": 12,
+        "name": "Dr. William Davis",
+        "qualifications": "M.S. in Clinical Psychology, Licensed Counselor",
+        "specialty": "Stress Management",
+        "availability": [3,5]
+    },
+    {
+        "psychologist_id": 13,
+        "name": "Dr. Sophia Wilson",
+        "qualifications": "Ph.D. in Counseling Psychology, Certified Family Therapist",
+        "specialty": "Family Conflict Resolution",
+        "availability": [2,4]
+    },
+    {
+        "psychologist_id": 14,
+        "name": "Dr. Benjamin Lee",
+        "qualifications": "M.A. in Clinical Psychology, Licensed Therapist",
+        "specialty": "Anxiety Disorders",
+        "availability": [1,5]
+    },
+    {
+        "psychologist_id": 15,
+        "name": "Dr. Isabella Smith",
+        "qualifications": "Ph.D. in Clinical Psychology, Certified Play Therapist",
+        "specialty": "Child and Adolescent Counseling",
+        "availability": [3,6]
+    }
+]}
