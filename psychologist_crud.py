@@ -1,16 +1,9 @@
 #Install libraries
-from pydantic import BaseModel 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, HTTPException
 import json
 from typing import Dict,List
-
-#Create base model for Serene app user
-class Psychologist(BaseModel):
-    psychologist_id: int
-    name: str
-    qualifications: str
-    specialty: str
-    availability: List[int]
+from auth import oauth2_scheme, get_current_active_user, get_current_active_admin_user
+from models import Psychologist, User
 
 #Defines a router to group and organize the API endpoints
 router = APIRouter()
@@ -22,12 +15,12 @@ with open(psy_filename,"r") as read_file:
 	psy_data = json.load(read_file)
 
 @router.get('/')
-async def get_all_psy(): 
+async def get_all_psy(user: User = Depends(get_current_active_user)): 
 	return psy_data['psychologist']
 
 #Untuk specific psychologist
 @router.get('/{psychologist_id}')
-async def get_psy(psy_id : int): 
+async def get_psy(psy_id : int, user: User = Depends(get_current_active_user)): 
 	psy_found = False
 	for psy_itr in psy_data['user']: 
 		if psy_itr['user_id'] == psy_id:
@@ -37,7 +30,7 @@ async def get_psy(psy_id : int):
 		return "Psychologist is not found!"    
 	
 @router.get('/find/')
-async def check_psyname(psyname : str): 
+async def check_psyname(psyname : str, user: User = Depends(get_current_active_user)): 
 	psy_found = False
 	for psy_itr in psy_data['psychologist']: 
 		if psy_itr['name'] == psyname:
@@ -48,7 +41,7 @@ async def check_psyname(psyname : str):
 
 #Belum diedit
 @router.post('/')
-async def create_psy(psy: Psychologist):
+async def create_psy(psy: Psychologist, cur_user: User = Depends(get_current_active_admin_user)):
 	psy_dict = dict(psy)
 	for psy_itr in psy_data['psychologist']: 
 		if psy_itr['psychologist_id'] == psy.id:
@@ -59,7 +52,7 @@ async def create_psy(psy: Psychologist):
 	return "Successfully added psychologist!"
 
 @router.put('/')
-async def update_psy(psy : Psychologist):
+async def update_psy(psy : Psychologist, cur_user: User = Depends(get_current_active_admin_user)):
 	psy_dict = dict(psy)
 	psy_found = False 
 	
@@ -75,7 +68,7 @@ async def update_psy(psy : Psychologist):
 		return "Psychologist not found!"
 
 @router.delete("/{psychologist_id}")
-async def delete_psy(psy_id : int): 
+async def delete_psy(psy_id : int, cur_user: User = Depends(get_current_active_admin_user)): 
 	psy_found = False
 	for psy_idx, psy_itr in enumerate(psy_data['psychologist']): 
 		if psy_itr['psy_id'] == psy_id:

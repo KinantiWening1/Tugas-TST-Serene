@@ -1,14 +1,15 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 import user_crud, psychologist_crud
-from typing import List
-from pydantic import BaseModel
+from typing import Dict,List
+from auth import oauth2_scheme, get_current_active_user, get_current_active_admin_user
+from models import User
 
 # Create a router for the appointment matching
 router = APIRouter()
 
 # Create a route for matching users with psychologists for an appointment
 @router.get('/{user_id}')
-async def match_appointment(user_id: int):
+async def match_appointment(user_id: int,cur_user: User = Depends(get_current_active_admin_user)):
     user = await user_crud.get_user(user_id)
     
     if user is None:

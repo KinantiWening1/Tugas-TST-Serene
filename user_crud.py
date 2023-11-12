@@ -1,19 +1,9 @@
 #Install libraries
-from pydantic import BaseModel 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, HTTPException
 import json
 from typing import Dict,List
-
-#Create base model for Serene app user
-class User(BaseModel):
-	user_id: int
-	username: str
-	email: str
-	password: str
-	date_of_birth: str
-	gender: str
-	day: List[int]  # Indentation should be consistent
-	preference: str  # Indentation should be consistent
+from auth import oauth2_scheme, get_current_active_admin_user, get_current_active_user
+from models import User
 
 #Defines a router to group and organize the API endpoints
 router = APIRouter()
@@ -52,7 +42,7 @@ async def check_username(username : str):
 
 #Belum diedit
 @router.post('/')
-async def create_user(user: User):
+async def create_user(user: User = Depends(get_current_active_admin_user)):
 	user_dict = dict(user)
 	for user_itr in user_data['user']: 
 		if user_itr['username'] == user.username or user_itr['user_id'] == user.id:
@@ -63,7 +53,7 @@ async def create_user(user: User):
 	return "Successfully added user!"
 
 @router.put('/')
-async def update_user(user : User):
+async def update_user(user: User = Depends(get_current_active_admin_user)):
 	user_dict = dict(user)
 	user_found = False 
 	for user_itr in user_data['user']: 
@@ -80,7 +70,7 @@ async def update_user(user : User):
 		return "User not found!"
 
 @router.delete("/{user_id}")
-async def delete_user(user_id : int): 
+async def delete_user(user_id: int, user: User = Depends(get_current_active_admin_user)):
 	user_found = False
 	for user_idx, user_itr in enumerate(user_data['user']): 
 		if user_itr['user_id'] == user_id:
