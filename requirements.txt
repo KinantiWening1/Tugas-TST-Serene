@@ -1,3 +1,13 @@
+# default
 fastapi==0.104.1
 pydantic==2.4.2
 uvicorn==0.24.0
+
+# jose library for JSON Web Tokens (JWT)
+python-jose==3.3.0
+
+#passlib
+passlib==1.7.4  
+
+#python multipart
+python-multipart==0.0.5
