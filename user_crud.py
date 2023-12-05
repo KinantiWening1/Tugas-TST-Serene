@@ -40,7 +40,6 @@ async def check_username(username : str):
 	if not user_found: 
 		return None
 
-#Belum diedit
 @router.post('/')
 async def create_user(user: User = Depends(get_current_active_admin_user)):
 	user_dict = dict(user)

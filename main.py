@@ -1,7 +1,7 @@
 from fastapi import Depends, FastAPI
 from user_crud import router as user_router
 from psychologist_crud import router as psy_router
-from schedule import router as sched_router
+from pairing import router as sched_router
 import auth
 
 app = FastAPI()

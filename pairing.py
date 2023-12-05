@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends
 import user_crud, psychologist_crud
 from typing import Dict,List
-from auth import oauth2_scheme, get_current_active_user, get_current_active_admin_user
+from auth import oauth2_scheme, get_current_active_user
 from models import User
 
 # Create a router for the appointment matching
@@ -9,7 +9,7 @@ router = APIRouter()
 
 # Create a route for matching users with psychologists for an appointment
 @router.get('/{user_id}')
-async def match_appointment(user_id: int,cur_user: User = Depends(get_current_active_admin_user)):
+async def match_appointment(user_id: int,cur_user: User = Depends(get_current_active_user)):
     user = await user_crud.get_user(user_id)
     
     if user is None:
@@ -22,7 +22,7 @@ async def match_appointment(user_id: int,cur_user: User = Depends(get_current_ac
         return "Sorry, there are no available psychologists at the moment."
     
     # Match the user with an available psychologist
-    matched_psychologist = match_user_with_psychologist(user, available_psychologists)
+    matched_psychologist = match_user_with_psychologist(user['preference'], available_psychologists)
     
     if matched_psychologist is None:
         return "Sorry, we couldn't find a suitable psychologist at the moment."
@@ -59,5 +59,5 @@ def can_schedule_appointment(day: List[int], psy_avail: List[int]) -> bool:
 def match_user_with_psychologist(preference: str, psychologists: List[psychologist_crud.Psychologist]) -> psychologist_crud.Psychologist:
     for psychologist in psychologists:
         if psychologist['specialty'] == preference:
-            return psychologist  # Return the first matching psychologist
-    return None  # Return None if no matching psychologist is found
+            return psychologist  
+    return None 
