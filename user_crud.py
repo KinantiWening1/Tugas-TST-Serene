@@ -5,15 +5,30 @@ from typing import Dict,List
 from auth import oauth2_scheme, get_current_active_admin_user, get_current_active_user
 from models import User
 
+import certifi
+
+ca = certifi.where()
+
+from pymongo import MongoClient
+
+client = MongoClient("mongodb+srv://asih_tst:Akiratst2021!@asihtst.hun0hrd.mongodb.net/?retryWrites=true&w=majority", tlsCAFile=ca)
+db = client['serene_be']
+collection = db['user']
+
+user_data = collection.find_one()
+
+def write_data(data):
+    collection.replace_one({}, data, upsert=True)
+
 #Defines a router to group and organize the API endpoints
 router = APIRouter()
 
 #Opens json_data and stores data in user_data
-user_filename="json_data/user.json"
+#user_filename="json_data/user.json"
 
-with open(user_filename,"r") as read_file:
-	user_data = json.load(read_file)
-	print(user_data)
+#with open(user_filename,"r") as read_file:
+	#user_data = json.load(read_file)
+	#print(user_data)
 
 @router.get('/')
 async def get_all_users(): 
@@ -41,18 +56,17 @@ async def check_username(username : str):
 		return None
 
 @router.post('/')
-async def create_user(user: User = Depends(get_current_active_admin_user)):
+async def create_user(user: User, cur_user : User = Depends(get_current_active_admin_user)):
 	user_dict = dict(user)
 	for user_itr in user_data['user']: 
 		if user_itr['username'] == user.username or user_itr['user_id'] == user.id:
 			return "Username and user IDs has to be unique!"
 	user_data['user'].append(user_dict)
-	with open(user_filename, "w") as write_file: 
-		json.dump(user_data, write_file)
+	write_data(user_data)
 	return "Successfully added user!"
 
 @router.put('/')
-async def update_user(user: User = Depends(get_current_active_admin_user)):
+async def update_user(user: User, cur_user : User = Depends(get_current_active_admin_user)):
 	user_dict = dict(user)
 	user_found = False 
 	for user_itr in user_data['user']: 
@@ -62,8 +76,7 @@ async def update_user(user: User = Depends(get_current_active_admin_user)):
 		if user_itr['user_id'] == user_dict['user_id']: 
 			user_found = True
 			user_data['user'][user_idx] = user_dict
-			with open(user_filename, "w") as write_file:
-				json.dump(user_data, write_file)
+			write_data(user_data)
 			return "Successfully updated user with username " + user_dict['username']
 	if not user_found: 
 		return "User not found!"
@@ -75,8 +88,7 @@ async def delete_user(user_id: int, user: User = Depends(get_current_active_admi
 		if user_itr['user_id'] == user_id:
 			user_found = True
 			user_data['user'].pop(user_idx)
-			with open(user_filename, "w") as write_file: 
-				json.dump(user_data, write_file)
+			write_data(user_data)
 			return "Successfully deleted user"
 	if not user_found: 
 		return "User not found!"

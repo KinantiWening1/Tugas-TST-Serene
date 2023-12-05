@@ -23,6 +23,15 @@ class Psychologist(BaseModel):
     specialty: str
     availability: List[int]
 
+#Appointment
+class Appointment(BaseModel):
+    appointment_id: int
+    user_id: int
+    psychologist_id: int
+    day: int
+    topic: str
+    attended: bool
+
 #Authentication
 class Token(BaseModel):
     access_token: str

@@ -36,8 +36,8 @@ async def get_all_psy(user: User = Depends(get_current_active_user)):
 @router.get('/{psychologist_id}')
 async def get_psy(psy_id : int, user: User = Depends(get_current_active_user)): 
 	psy_found = False
-	for psy_itr in psy_data['user']: 
-		if psy_itr['user_id'] == psy_id:
+	for psy_itr in psy_data['psychologist']: 
+		if psy_itr['psychologist_id'] == psy_id:
 			psy_found = True
 			return psy_itr
 	if not psy_found: 
