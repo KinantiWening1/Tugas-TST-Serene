@@ -2,7 +2,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 import json
 from typing import Dict,List
-from auth import oauth2_scheme, get_current_active_admin_user
+from auth import oauth2_scheme, get_current_active_admin_user, get_current_active_user
 from models import User
 from update_passwords import get_password_hash
 
@@ -35,19 +35,8 @@ router = APIRouter(tags=["user"])
 async def get_all_users(): 
 	return user_data['user']
 
-#Untuk specific user 
-@router.get('/{user_id}')
-async def get_user(user_id : int, cur_user: User = Depends(get_current_active_admin_user)): 
-	user_found = False
-	for user_itr in user_data['user']: 
-		if user_itr['user_id'] == user_id:
-			user_found = True
-			return user_itr
-	if not user_found: 
-		return "User is not found!"    
-	
-@router.get('/find/')
-async def check_username(username : str, cur_user: User = Depends(get_current_active_admin_user)): 
+@router.get('/{username}')
+async def check_username(username : str): 
 	user_found = False
 	for user_itr in user_data['user']: 
 		if user_itr['username'] == username:
@@ -90,6 +79,17 @@ async def create_user(user: User):
     write_data(user_data)
     
     return {"message": "Successfully added user!", "user_id": user_id}
+
+#Untuk specific user 
+@router.get('/{user_id}')
+async def get_user(user_id : int, cur_user: User = Depends(get_current_active_admin_user)): 
+	user_found = False
+	for user_itr in user_data['user']: 
+		if user_itr['user_id'] == user_id:
+			user_found = True
+			return user_itr
+	if not user_found: 
+		return "User is not found!"    
 
 @router.put('/')
 async def update_user(user: User, cur_user : User = Depends(get_current_active_admin_user)):

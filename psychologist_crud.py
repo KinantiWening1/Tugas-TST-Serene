@@ -43,8 +43,8 @@ async def get_psy(psy_id : int, user: User = Depends(get_current_active_user)):
 	if not psy_found: 
 		return "Psychologist is not found!"    
 	
-@router.get('/find/')
-async def check_psyname(psyname : str, user: User = Depends(get_current_active_user)): 
+@router.get('{psyname}')
+async def check_psyname(psyname : str): 
 	psy_found = False
 	for psy_itr in psy_data['psychologist']: 
 		if psy_itr['name'] == psyname:
