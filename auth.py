@@ -18,10 +18,20 @@ SECRET_KEY = "f32372c0768f597c7c3eccb8bc3d4faa5c78a55ddede6a8cd4d4067a0e623907"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-# Load user data from user.json
-user_file="json_data/user.json"
-with open(user_file, 'r') as file:
-    user_data = json.load(file)
+import certifi
+
+ca = certifi.where()
+
+from pymongo import MongoClient
+
+client = MongoClient("mongodb+srv://asih_tst:Akiratst2021!@asihtst.hun0hrd.mongodb.net/?retryWrites=true&w=majority", tlsCAFile=ca)
+db = client['serene_be']
+collection = db['user']
+
+user_data = collection.find_one()
+
+def write_data(data):
+    collection.replace_one({}, data, upsert=True)
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
@@ -36,15 +46,20 @@ def get_password_hash(password):
 
 
 def get_user(username: str):
-    for user_dict in user_data['user']:
-        if user_dict['username'] == username:
-            return UserInDB(**user_dict)
+    print(username)
+    user_found = False
+    for user_itr in user_data['user']: 
+        if user_itr['username'] == username:
+            user_found = True
+            return user_itr
+    if not user_found: 
+        return None
 
 def authenticate_user(username: str, password: str):
     user = get_user(username)
     if not user:
         return False
-    if not verify_password(password, user.hashed_password):
+    if not verify_password(password, user['hashed_password']):
         return False
     return user
 
@@ -61,6 +76,7 @@ def create_access_token(data: dict, expires_delta: Union[timedelta, None] = None
 
 
 async def get_current_user(token: str = Depends(oauth2_scheme)):
+    print('masuk ke get current user')
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -80,12 +96,12 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
     return user
 
 async def get_current_active_user(current_user: User = Depends(get_current_user)):
-    if current_user.disabled:
+    if current_user['disabled']:
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
 
 async def is_admin(user: User = Depends(get_current_active_user)):
-    if "admin" not in user.tags:
+    if "admin" not in user['tags']:
         raise HTTPException(status_code=403, detail="Permission denied, user is not an admin")
     return user
 
@@ -103,6 +119,6 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
         )
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.username}, expires_delta=access_token_expires
+        data={"sub": user['username']}, expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}

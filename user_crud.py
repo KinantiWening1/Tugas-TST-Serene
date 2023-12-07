@@ -5,6 +5,7 @@ from typing import Dict,List
 from auth import oauth2_scheme, get_current_active_admin_user, get_current_active_user
 from models import User
 from update_passwords import get_password_hash
+from auth import get_current_user
 
 import certifi
 
@@ -44,6 +45,10 @@ async def check_username(username : str):
 			return user_itr
 	if not user_found: 
 		return None
+	
+@router.get('/active/{token}')
+async def get_loggedin_user(token:str, current_user: User = Depends(get_current_user)):
+	return current_user
 
 @router.post('/')
 async def create_user(user: User):
@@ -80,6 +85,21 @@ async def create_user(user: User):
     
     return {"message": "Successfully added user!", "user_id": user_id}
 
+@router.put('/')
+async def update_user(user: User, cur_user : User = Depends(get_current_active_user)):
+	user_dict = dict(user)
+	user_found = False 
+	for user_idx, user_itr in enumerate(user_data['user']): 
+		if user_itr['user_id'] == user_dict['user_id']: 
+			user_found = True
+			user_data['user'][user_idx] = user_dict
+			print('ini user data')
+			print(user_data)
+			write_data(user_data)
+			return "Successfully updated user with username " + user_dict['username']
+	if not user_found: 
+		return "User not found!"
+
 #Untuk specific user 
 @router.get('/{user_id}')
 async def get_user(user_id : int, cur_user: User = Depends(get_current_active_admin_user)): 
@@ -89,23 +109,8 @@ async def get_user(user_id : int, cur_user: User = Depends(get_current_active_ad
 			user_found = True
 			return user_itr
 	if not user_found: 
+		print('user gaketemu')
 		return "User is not found!"    
-
-@router.put('/')
-async def update_user(user: User, cur_user : User = Depends(get_current_active_admin_user)):
-	user_dict = dict(user)
-	user_found = False 
-	for user_itr in user_data['user']: 
-		if user_itr['username'] == user.username:
-			return "Username already exists!"
-	for user_idx, user_itr in enumerate(user_data['user']): 
-		if user_itr['user_id'] == user_dict['user_id']: 
-			user_found = True
-			user_data['user'][user_idx] = user_dict
-			write_data(user_data)
-			return "Successfully updated user with username " + user_dict['username']
-	if not user_found: 
-		return "User not found!"
 
 @router.delete("/{user_id}")
 async def delete_user(user_id: int, user: User = Depends(get_current_active_admin_user)):

@@ -17,6 +17,8 @@ async def match_appointment(user_id: int,cur_user: User = Depends(get_current_ac
     
     # Find available psychologists
     available_psychologists = await find_available_psychologists(user['day'])
+    print()
+    print(user['day'])
     
     if not available_psychologists:
         return "Sorry, there are no available psychologists at the moment."
@@ -46,8 +48,11 @@ async def find_available_psychologists(day: int) -> List[psychologist_crud.Psych
 
     # Use await to call the asynchronous function
     psychologists = await psychologist_crud.get_all_psy()
+    print(psychologists)
 
     for psychologist in psychologists:
+        print(psychologist['availability'])
+        print(day)
         if can_schedule_appointment(day, psychologist['availability']):
             available_psychologists.append(psychologist)
 
