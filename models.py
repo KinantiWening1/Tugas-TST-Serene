@@ -8,9 +8,7 @@ class User(BaseModel):
 	email: str
 	password: str
 	hashed_password: str
-	date_of_birth: str
-	gender: str
-	day: List[int]  
+	day: int
 	preference: str  
 	disabled: bool
 	tags: str

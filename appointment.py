@@ -24,7 +24,7 @@ def write_data(data):
     collection.replace_one({}, data, upsert=True)
 
 #Defines a router to group and organize the API endpoints
-router = APIRouter()
+router = APIRouter(tags=["appointment"])
 
 #Opens json_data and stores data in app_data
 # app_filename="json_data/appointment.json"
@@ -33,7 +33,7 @@ router = APIRouter()
 # app_data = json.load(read_file)
 
 @router.get('/')
-async def get_all_app(cur_user: User = Depends(get_current_active_user)): 
+async def get_all_app(cur_user: User = Depends(get_current_active_admin_user)): 
 	return app_data['appointment']
 
 #Untuk specific appointment
@@ -48,7 +48,7 @@ async def get_app(app_id : int, user: User = Depends(get_current_active_user)):
 		return "Appointment is not found!"    
 
 @router.post('/')
-async def create_app(app: Appointment, cur_user: User = Depends(get_current_active_admin_user)):
+async def create_app(app: Appointment, cur_user: User = Depends(get_current_active_user)):
     app_dict = dict(app)
 
     # Check if user_id exists
@@ -96,7 +96,7 @@ async def create_app(app: Appointment, cur_user: User = Depends(get_current_acti
             return "Successfully added appointment!"
 
 @router.put('/')
-async def update_app(app : Appointment, cur_user: User = Depends(get_current_active_admin_user)):
+async def update_app(app : Appointment, cur_user: User = Depends(get_current_active_user)):
 	app_dict = dict(app)
 	app_found = False 
 	
@@ -111,7 +111,7 @@ async def update_app(app : Appointment, cur_user: User = Depends(get_current_act
 		return "Appointment not found!"
 
 @router.delete("/{appointment_id}")
-async def delete_app(app_id : int, cur_user: User = Depends(get_current_active_admin_user)): 
+async def delete_app(app_id : int, cur_user: User = Depends(get_current_active_user)): 
 	app_found = False
 	for app_idx, app_itr in enumerate(app_data['appointment']): 
 		if app_itr['appointment_id'] == app_id:

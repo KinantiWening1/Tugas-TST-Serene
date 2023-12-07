@@ -20,7 +20,7 @@ def write_data(data):
     collection.replace_one({}, data, upsert=True)
 
 #Defines a router to group and organize the API endpoints
-router = APIRouter()
+router = APIRouter(tags=["psychologist"])
 
 #Opens json_data and stores data in psy_data
 # psy_filename="json_data/psychologist.json"

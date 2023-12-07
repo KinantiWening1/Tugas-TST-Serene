@@ -5,7 +5,7 @@ from auth import oauth2_scheme, get_current_active_user
 from models import User
 
 # Create a router for the appointment matching
-router = APIRouter()
+router = APIRouter(tags=["pairing"])
 
 # Create a route for matching users with psychologists for an appointment
 @router.get('/{user_id}')
@@ -41,7 +41,7 @@ async def get_user_by_id(user_id: int) -> user_crud.User:
             return user
     return None
 
-async def find_available_psychologists(day: List[int]) -> List[psychologist_crud.Psychologist]:
+async def find_available_psychologists(day: int) -> List[psychologist_crud.Psychologist]:
     available_psychologists = []
 
     # Use await to call the asynchronous function
@@ -53,8 +53,8 @@ async def find_available_psychologists(day: List[int]) -> List[psychologist_crud
 
     return available_psychologists
 
-def can_schedule_appointment(day: List[int], psy_avail: List[int]) -> bool:
-    return day == psy_avail
+def can_schedule_appointment(day: int, psy_avail: List[int]) -> bool:
+    return day in psy_avail
 
 def match_user_with_psychologist(preference: str, psychologists: List[psychologist_crud.Psychologist]) -> psychologist_crud.Psychologist:
     for psychologist in psychologists:

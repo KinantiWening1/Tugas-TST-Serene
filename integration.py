@@ -20,3 +20,18 @@ def get_movie_recommendation(mood: str, amount: int):
         return movies.json()
     else:
         raise HTTPException(status_code=login_response.status_code, detail="Login failed")
+    
+def get_all_movies():
+    login_response = requests.post(url + 'users/login', json={'username': 'asih', 'password': 'pw'})
+
+    # Check if the login was successful
+    if login_response.status_code == 200:
+        access_token = login_response.json().get('access_token')
+        headers = {'Authorization': f'Bearer {access_token}'}
+
+        # Use params parameter for including query parameters
+        movies = requests.get(url + 'movies', headers=headers)
+
+        return movies.json()
+    else:
+        raise HTTPException(status_code=login_response.status_code, detail="Login failed")

@@ -2,8 +2,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 import json
 from typing import Dict,List
-from auth import oauth2_scheme, get_current_active_admin_user, get_current_active_user
+from auth import oauth2_scheme, get_current_active_admin_user
 from models import User
+from update_passwords import get_password_hash
 
 import certifi
 
@@ -21,7 +22,7 @@ def write_data(data):
     collection.replace_one({}, data, upsert=True)
 
 #Defines a router to group and organize the API endpoints
-router = APIRouter()
+router = APIRouter(tags=["user"])
 
 #Opens json_data and stores data in user_data
 #user_filename="json_data/user.json"
@@ -36,7 +37,7 @@ async def get_all_users():
 
 #Untuk specific user 
 @router.get('/{user_id}')
-async def get_user(user_id : int): 
+async def get_user(user_id : int, cur_user: User = Depends(get_current_active_admin_user)): 
 	user_found = False
 	for user_itr in user_data['user']: 
 		if user_itr['user_id'] == user_id:
@@ -46,7 +47,7 @@ async def get_user(user_id : int):
 		return "User is not found!"    
 	
 @router.get('/find/')
-async def check_username(username : str): 
+async def check_username(username : str, cur_user: User = Depends(get_current_active_admin_user)): 
 	user_found = False
 	for user_itr in user_data['user']: 
 		if user_itr['username'] == username:
@@ -56,14 +57,39 @@ async def check_username(username : str):
 		return None
 
 @router.post('/')
-async def create_user(user: User, cur_user : User = Depends(get_current_active_admin_user)):
-	user_dict = dict(user)
-	for user_itr in user_data['user']: 
-		if user_itr['username'] == user.username or user_itr['user_id'] == user.id:
-			return "Username and user IDs has to be unique!"
-	user_data['user'].append(user_dict)
-	write_data(user_data)
-	return "Successfully added user!"
+async def create_user(user: User):
+    # Generate a new user ID
+    user_id = max(u['user_id'] for u in user_data['user']) + 1
+
+    # Set default values for disabled, tags, preferences and day
+    user.disabled = False
+    user.tags = "regular"
+
+    # Hash the password
+    user.hashed_password = get_password_hash(user.password)
+
+	# User preference and day
+    user.preference = "-"
+    user.day = [0]
+    
+    # Create a dictionary from the user model
+    user_dict = dict(user)
+
+    # Check for uniqueness of username and user ID
+    for user_itr in user_data['user']:
+        if user_itr['username'] == user.username or user_itr['user_id'] == user_id:
+            raise HTTPException(status_code=400, detail="Username and user IDs have to be unique!")
+
+    # Set the user ID to the generated value
+    user_dict['user_id'] = user_id
+    
+    # Append the user to the data
+    user_data['user'].append(user_dict)
+    
+    # Update the user data file
+    write_data(user_data)
+    
+    return {"message": "Successfully added user!", "user_id": user_id}
 
 @router.put('/')
 async def update_user(user: User, cur_user : User = Depends(get_current_active_admin_user)):
