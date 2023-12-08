@@ -9,7 +9,7 @@ import auth
 from fastapi.middleware.cors import CORSMiddleware
 
 origins = [
-    "http://localhost:5173",
+    "https://sereneappasihfix.netlify.app",
 ]
 
 app = FastAPI()
